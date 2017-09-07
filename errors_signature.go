@@ -18,6 +18,7 @@ func main() {
 	}
 
 	fmt.Printf("%T \n %T",fmt.Errorf("sq root of neg num. %v"),fmt.Sprintf("sq root of neg num. %v"))
+	fmt.Println("\nnew update ")
 }
 
 func sqrt(n int) (int , error){
