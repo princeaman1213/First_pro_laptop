@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
-	"strconv"
+	//"strconv"
 )
 
 func main() {
-	a :=strconv.Itoa(44)
-	fmt.Printf("%T \n",a)
+	//a :=strconv.Itoa(44)
+	//fmt.Printf("%T",a)
 
-	fmt.Println(a)
+	//fmt.Println(strconv.Itoa(22))
 
 
 	var name interface{}=33
@@ -17,8 +17,10 @@ func main() {
 
 	fmt.Println(name1.(string))
 	fmt.Println(name.(int))       //assertion
-	fmt.Printf("%T \n%T \n",name1,name)
+	fmt.Printf("%T %T \n",name1,name)
 
 	fmt.Println(name.(int)+12)
+
+
 
 }

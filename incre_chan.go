@@ -18,7 +18,7 @@ func main(){
 	}
 }
 
-func text(s string) chan string{
+func text(s string)chan string{
 	c:=make(chan string)
 	//for i:=0;i<5;i++{
 		go func(){

@@ -22,7 +22,7 @@ func main() {
 
 }
 
-func incrementor(s string) <-chan int{
+func incrementor(s string) chan int{
 	c :=make(chan int)
 
 	go func(){
@@ -36,7 +36,7 @@ func incrementor(s string) <-chan int{
 	return c
 }
 
-func printchan(c <-chan int) <-chan int{   //channel direction
+func printchan(c <-chan int) chan int{   //channel direction
 	out :=make(chan int)
 	go func(){
 		var t int
