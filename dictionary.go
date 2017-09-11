@@ -28,7 +28,7 @@ func main() {
 		fmt.Println(i," : ",v)
 	}
 
-	fmt.Println("Enter the index of word to be printed :")
+	fmt.Println("Enter some initial charactersof the word to be printed :")
 	fmt.Scanf("%v",&index)
 
 	for j,v1:=range db[l]{
