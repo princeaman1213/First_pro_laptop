@@ -11,7 +11,7 @@ func main() {
 			1 : "abate",
 			2 : "alarm",
 			3 : "algorithm",
-			5 : "analogy",
+			4 : "analogy",
 		},
 		"b" : map[int]string{
 			1 : "bad",
