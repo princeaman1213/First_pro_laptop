@@ -19,9 +19,7 @@ func main() {
 			3 : "base",
 		},
 	}
-
-	var l string
-	var index string
+	var l,index string
 	fmt.Println("Enter the first letter :")
 	fmt.Scanf("%v",&l)
 	l = strings.ToLower(l)
@@ -34,9 +32,11 @@ func main() {
 	fmt.Scanf("%v",&index)
 
 	for j,v1:=range db[l]{
-		flag :=strings.HasPrefix(db[l][j],index)
-		if flag == true{
+		if strings.HasPrefix(db[l][j],index){
 			fmt.Println(j," : ",v1)
+			break
 		}
+		fmt.Println("no word has the entered suffix")
+		break
 	}
 }
