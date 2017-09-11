@@ -73,7 +73,7 @@ func fact(n chan int) chan int{
 			//f=f*(r+1)
 			c2<-fact1(r)
 		//	fmt.Println("Teting",fact1(r))
-			time.Sleep(time.Millisecond)
+			time.Sleep(time.Millisecond*5)
 			//fmt.Println("rrrrrr",r)
 		}
 		//c2<-f
@@ -95,18 +95,19 @@ func fact1(n1 int) int{
 func mearge(c5 ...chan int) chan int{
 	c6:=make(chan int)
 	var wg sync.WaitGroup
+	//fmt.Println("lent is ",len(c5))
 	wg.Add(len(c5))
+	for _, r := range c5 {
+		go func(r chan int) {
 
-		go func(){
-			for _,r:=range c5{
-			for r8:=range r{
-				c6<-r8
-				time.Sleep(time.Millisecond)
-			}
-			wg.Done()
-			}
-		}()
+				for r8 := range r {
+					c6 <- r8
+					time.Sleep(time.Millisecond)
+				}
+				wg.Done()
 
+			}(r)
+		}
 
 	go func() {
 		wg.Wait()
