@@ -19,14 +19,13 @@ func main() {
 			3 : "base",
 		},
 	}
-	//fmt.Println(db[0]["1"])
+
 	var l string
 	var index string
 	fmt.Println("Enter the first letter :")
 	fmt.Scanf("%v",&l)
 	l = strings.ToLower(l)
 
-	//fmt.Println(db[0])
 	for i,v:=range db[l]{
 		fmt.Println(i," : ",v)
 	}
@@ -34,14 +33,10 @@ func main() {
 	fmt.Println("Enter the index of word to be printed :")
 	fmt.Scanf("%v",&index)
 
-	//fmt.Println(db[l][index])
-
 	for j,v1:=range db[l]{
 		flag :=strings.HasPrefix(db[l][j],index)
 		if flag == true{
 			fmt.Println(j," : ",v1)
 		}
-
 	}
-
 }
