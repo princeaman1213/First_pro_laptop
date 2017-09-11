@@ -19,7 +19,7 @@ func main() {
 	//p2 :=person{"acd","gupta",22,2}
 
 	json.NewEncoder(os.Stdout).Encode(p1)       //encode
-var i int
+//var i int
 	//json.NewEncoder(os.Stdout).Encode(i)
 
 	//----------------------------------------------------------------------------------------
