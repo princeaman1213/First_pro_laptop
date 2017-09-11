@@ -11,7 +11,7 @@ func main() {
 
 	c :=gen()
 
-	/*
+
 		//Fan out
 	c1:=make([]chan int,10)
 	for i:=0;i<10;i++{
@@ -20,9 +20,9 @@ func main() {
 
 	//Fan in
 	c11:=mearge(c1...)
-	 */
-	// Can also use the above approach for fan out and fan in instead of the below one to avoid using unnecessary memory due to many variables
 
+	// Can also use the above/below approach for fan out and fan in instead of the below/above one. above one avoids unnecessary memory usage due to many variables
+/*
 	//Fan out
 	c1 :=fact(c)
 	c2 :=fact(c)
@@ -37,7 +37,7 @@ func main() {
 
 	//Fan in
 	c11:=mearge(c1,c2,c3,c4,c5,c6,c7,c8,c9,c10)
-
+*/
 
     var co int
 	for r:=range c11{
