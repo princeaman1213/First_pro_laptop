@@ -33,7 +33,7 @@ func main() {
 	t:=string(l[0])
 	fmt.Println("Suggestions are listed as follows...")
 	for i,v:=range db[t]{
-		if strings.HasPrefix(db[t][i],l){
+		if strings.HasPrefix(v,l){
 			fmt.Println(i," : ",v)
 		}
 	}
