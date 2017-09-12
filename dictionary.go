@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
 func main() {
@@ -11,10 +12,6 @@ func main() {
 			2 : "alarm",
 			3 : "algorithm",
 			4 : "analogy",
-			5 : "admire",
-			6 : "alarity",
-			7 : "abscond",
-			8 : "apathy",
 		},
 		"b" : map[int]string{
 			1 : "bad",
@@ -22,22 +19,24 @@ func main() {
 			3 : "base",
 		},
 	}
-	var l string
-	var index int
+	var l,index string
 	fmt.Println("Enter the first letter :")
 	fmt.Scanf("%v",&l)
-	fmt.Println("Suggestions are listed as follows...")
+	l = strings.ToLower(l)
+
 	for i,v:=range db[l]{
 		fmt.Println(i," : ",v)
 	}
 
-	fmt.Println("Enter the index of the word to be printed :")
+	fmt.Println("Enter some initial charactersof the word to be printed :")
 	fmt.Scanf("%v",&index)
 
-	if index<=len(db[l]){
-		fmt.Println("Selected word is...\n",db[l][index])
-	}else{
-		fmt.Printf("No words found for provided index. Enter the correct index ")
+	for j,v1:=range db[l]{
+		if strings.HasPrefix(db[l][j],index){
+			fmt.Println(j," : ",v1)
+			break
+		}
+		fmt.Println("no word has the entered suffix")
+		break
 	}
-
 }

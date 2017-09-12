@@ -19,19 +19,16 @@ func main() {
 	//p2 :=person{"acd","gupta",22,2}
 
 	json.NewEncoder(os.Stdout).Encode(p1)       //encode
-//var i int
+var i int
 	//json.NewEncoder(os.Stdout).Encode(i)
-
-	//----------------------------------------------------------------------------------------
-
 	var p2 person
 	t :=strings.NewReader(`{"Fname":"AMan","Lname":"Patel","Age":21}`)
 	json.NewDecoder(t).Decode(&p2)               //decode
 	fmt.Println(p2)
 
-	//t1 :=strings.NewReader(`2`)
-	//json.NewDecoder(t1).Decode(&i)       //decode
-	//fmt.Println(i)
+	t1 :=strings.NewReader(`2`)
+	json.NewDecoder(t1).Decode(&i)       //decode
+	fmt.Println(i)
 
 
 }

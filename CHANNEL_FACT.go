@@ -10,8 +10,8 @@ func main() {
 
     //var num int
 	//fmt.Scanln(&num)
-       	//fmt.Println(math.MaxInt64)
-	       //n :=10
+	//fmt.Println(math.MaxInt64)
+	//n :=10
 	//fmt.Printf("%T",n)
    // wg.Add(n)
     c :=gen()

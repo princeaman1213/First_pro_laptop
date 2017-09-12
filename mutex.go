@@ -22,13 +22,13 @@ func main() {
 
 func increment(s string){
 	for i:=0;i<20;i++{
-		mu.Lock()
-		x:=count
-        x++
-		time.Sleep(time.Duration(rand.Intn(3))*time.Millisecond)
 
-		count=x
-		//count++
+		//x:=count
+        //x++
+		time.Sleep(time.Duration(rand.Intn(3))*time.Millisecond)
+		mu.Lock()
+		//count=x
+		count++
 		fmt.Println(s,i,"counter",count)
 		mu.Unlock()
 	}
