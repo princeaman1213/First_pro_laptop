@@ -6,10 +6,17 @@ import (
 	"sync"
 )
 
+type person struct {
+	vel float64
+	dis float64
+	index int
+}
+
 var check sync.WaitGroup
 
 func main() {
 	check.Add(3)
+    var a,b,c person
 
 		arrx:=[]float64{0,185,212,265,273,279,292,367,392,426,434,437,477,491,499}
 		arry:=[]float64{0,78,99,146,188,56,243,69,321,324,115,132,364,225,121}    //coordinates of person 1 on route 1
@@ -20,26 +27,44 @@ func main() {
 		arrx2:=[]float64{0,142,156,178,234,278,333,387,390,406,453,487,499}
 		arry2:=[]float64{0,24,57,167,388,299,120,268,444,100,98,167,22,110}    //coordinates of person 1 on route 3
 
-		go calc(1,arrx,arry)
-	    go calc(2,arrx1,arry1)
-	    go calc(3,arrx2,arry2)
+		go func(){
+			a=calc(1,arrx,arry)
+		}()
+	    go func(){
+		     b=calc(2,arrx1,arry1)
+	    }()
+	    go func(){
+		    c=calc(3,arrx2,arry2)
+	     }()
+
 
 	check.Wait()
-}
 
-func calc(n int,arrx,arry []float64){
-
-	var i2 int
-	var d2 float64
-	var v2 float64
-	for i2=1;i2<len(arrx);i2++{
-		d2 += math.Sqrt(math.Pow((arrx[i2-1] - arrx[i2]), 2) + math.Pow((arry[i2-1] - arry[i2]), 2))
+	if a.vel>=b.vel && a.vel>=c.vel{
+		fmt.Printf("Best route is route %d with avg vel : %.2f\n",a.index,a.vel)
+	}else if b.vel>=a.vel && b.vel>=c.vel{
+		fmt.Printf("Best route is route %d with avg vel : %.2f\n",b.index,b.vel)
+	}else{
+		fmt.Printf("Best route is route %d with avg vel : %.2f\n",c.index,c.vel)
 	}
 
-	d2+=arry[i2-1]
-	v2=d2/float64(i2*5)
-	fmt.Printf("\ndistance of route %v is          : %.2f metres \naverage velocity on this route is : %.2f m/s",n,d2,v2)
+}
+
+func calc(n int,arrx,arry []float64) person{
+
+	 var p2 person
+	for p2.index=1;p2.index<len(arrx);p2.index++{
+		p2.dis += math.Sqrt(math.Pow((arrx[p2.index-1] - arrx[p2.index]), 2) + math.Pow((arry[p2.index-1] - arry[p2.index]), 2))
+	}
+
+	p2.dis+=arry[p2.index-1]
+	p2.vel=p2.dis/float64(p2.index*5)
+	fmt.Printf("\ndistance of route %v is          : %.2f metres \naverage velocity on this route is : %.2f m/s\n\n",n,p2.dis,p2.vel)
+p2.index=n
 	check.Done()
+
+	return p2
+
 }
 
 
