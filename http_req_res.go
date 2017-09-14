@@ -40,7 +40,7 @@ func request(c net.Conn){
 		fmt.Println(data)
 		//fmt.Fprintln(c,"Received : ",data)         // video no.  023
         if i==0 {
-			fmt.Println(strings.Fields(data)[i],strings.Fields(data)[i+1])
+			fmt.Println("Method : ",strings.Fields(data)[i],"URI :",strings.Fields(data)[i+1])
 
 		}
 		if data==""{

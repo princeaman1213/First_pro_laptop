@@ -20,10 +20,10 @@ var fm = template.FuncMap{
 	"trim" : first_3,
 }
 
-func first_3(str string) string{
-	str = strings.TrimSpace(str)
-	str =str[:3]
-	return str
+	func first_3(str string) string{
+		str = strings.TrimSpace(str)
+		str =str[:3]
+		return str
 }
 
 func init(){
