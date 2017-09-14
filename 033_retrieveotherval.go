@@ -18,7 +18,7 @@ func (m dog) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	data := struct {
 		Method        string
 		URL           *url.URL
-		Submissions   map[string][]string
+		Submissions   url.Values
 		Header        http.Header
 		Host          string
 		ContentLength int64
