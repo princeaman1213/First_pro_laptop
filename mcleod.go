@@ -1,78 +1,75 @@
 package main
 
 import (
-	"net"
-	"fmt"
 	"bufio"
-
+	"fmt"
+	"log"
+	"net"
 	"strings"
 )
 
 func main() {
-	l,err:=net.Listen("tcp",":8080")
-	if err!=nil{
-		fmt.Println(err)
+	li, err := net.Listen("tcp", ":8080")
+	if err != nil {
+		log.Fatalln(err.Error())
 	}
+	defer li.Close()
 
-	for{
-		c,err:=l.Accept()              //here we accept the tcp connection in c and now we can read and write on this connection
-		if err!=nil{
-			fmt.Println(err)
+	for {
+		conn, err := li.Accept()
+		if err != nil {
+			log.Println(err.Error())
 			continue
 		}
-		go handleconn(c)
+		go handle(conn)
 	}
 }
 
-func handleconn(c net.Conn){
-	defer c.Close()
-	request(c)
-
+func handle(conn net.Conn) {
+	defer conn.Close()
+	request(conn)
 }
 
-func request(c net.Conn){
-   var i int
-	scanner:=bufio.NewScanner(c)
-	//scanner.Split(bufio.ScanWords)       //to print each word in new line
-	for scanner.Scan(){
-		data:=scanner.Text()
-		fmt.Println(data)
-		//fmt.Fprintln(c,"Received : ",data)         // video no.  023
-	    if i==0 {
-			mux(c, data)
+func request(conn net.Conn) {
+	i := 0
+	scanner := bufio.NewScanner(conn)
+	for scanner.Scan() {
+		ln := scanner.Text()
+		fmt.Println(ln)
+		if i == 0 {
+			mux(conn, ln)
 		}
-		if data == ""{
+		if ln == "" {
+			// headers are done
 			break
 		}
 		i++
 	}
-	//defer c.Close()
-	fmt.Println("End Of Prog")          //program reaches here when we close the connection i.e close localhost 8080
 }
 
-func mux(c net.Conn,data string){
+func mux(conn net.Conn, ln string) {
+	// request line
+	m := strings.Fields(ln)[0] // method
+	u := strings.Fields(ln)[1] // uri
+	fmt.Println("***METHOD", m)
+	fmt.Println("***URI", u)
 
-	method:=strings.Fields(data)[0]
-	uri:=strings.Fields(data)[1]
-	fmt.Println("methos is : ",method,"uri is : ",uri)
-	
-	//mux
-       if method == "GET" && uri =="/"{
-       	index(c)
-     	}
-	if method == "GET" && uri =="/about"{
-		about(c)
+	// multiplexer
+	if m == "GET" && u == "/" {
+		index(conn)
 	}
-	if method == "GET" && uri =="/contact"{
-		contact(c)
+	if m == "GET" && u == "/about" {
+		about(conn)
 	}
-	if method == "GET" && uri == "/apply" {
-		apply(c)
+	if m == "GET" && u == "/contact" {
+		contact(conn)
 	}
-	if method == "POST" && uri == "/apply" {
-		applyProcess(c)
+	if m == "GET" && u == "/apply" {
+		apply(conn)
 	}
-
+	if m == "POST" && u == "/apply" {
+		applyProcess(conn)
+	}
 }
 
 func index(conn net.Conn) {
@@ -123,7 +120,7 @@ func contact(conn net.Conn) {
 	fmt.Fprint(conn, body)
 }
 
-func apply(c net.Conn) {
+func apply(conn net.Conn) {
 
 	body := `<!DOCTYPE html><html lang="en"><head><meta charet="UTF-8"><title></title></head><body>
 	<strong>APPLY</strong><br>
@@ -131,20 +128,20 @@ func apply(c net.Conn) {
 	<a href="/about">about</a><br>
 	<a href="/contact">contact</a><br>
 	<a href="/apply">apply</a><br>
-	<form method="POST" action="/apply">
-	<input type="text" name="fname" placeholder="enter first name">
-	<input type="submit" value="apply">
-	</form>
+	  <form action="/?fname=asd" method = "GET">
+	         <input type="text" name="fname" placeholder="first-name" autofocus autocomlpete="off">
+	         <input type="submit" name="sub-btn" value="my button">
+	   </form>
 	</body></html>`
 
-	fmt.Fprint(c, "HTTP/1.1 200 OK\r\n")
-	fmt.Fprintf(c, "Content-Length: %d\r\n", len(body))
-	fmt.Fprint(c, "Content-Type: text/html\r\n")
-	fmt.Fprint(c, "\r\n")
-	fmt.Fprint(c, body)
+	fmt.Fprint(conn, "HTTP/1.1 200 OK\r\n")
+	fmt.Fprintf(conn, "Content-Length: %d\r\n", len(body))
+	fmt.Fprint(conn, "Content-Type: text/html\r\n")
+	fmt.Fprint(conn, "\r\n")
+	fmt.Fprint(conn, body)
 }
 
-func applyProcess(c net.Conn) {
+func applyProcess(conn net.Conn) {
 
 	body := `<!DOCTYPE html><html lang="en"><head><meta charet="UTF-8"><title></title></head><body>
 	<strong>APPLY PROCESS</strong><br>
@@ -154,9 +151,9 @@ func applyProcess(c net.Conn) {
 	<a href="/apply">apply</a><br>
 	</body></html>`
 
-	fmt.Fprint(c, "HTTP/1.1 200 OK\r\n")
-	fmt.Fprintf(c, "Content-Length: %d\r\n", len(body))
-	fmt.Fprint(c, "Content-Type: text/html\r\n")
-	fmt.Fprint(c, "\r\n")
-	fmt.Fprint(c, body)
+	fmt.Fprint(conn, "HTTP/1.1 200 OK\r\n")
+	fmt.Fprintf(conn, "Content-Length: %d\r\n", len(body))
+	fmt.Fprint(conn, "Content-Type: text/html\r\n")
+	fmt.Fprint(conn, "\r\n")
+	fmt.Fprint(conn, body)
 }

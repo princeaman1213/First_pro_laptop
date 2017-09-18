@@ -9,8 +9,6 @@ import (
 
 var tpl *template.Template
 
-
-
 type structure struct{
 	Name string
 	Age int
@@ -27,7 +25,7 @@ var fm = template.FuncMap{
 }
 
 func init(){
-	tpl=template.Must(template.New("new one").Funcs(fm).ParseFiles("passfn.gohtml"))
+	tpl=template.Must(template.New("").Funcs(fm).ParseFiles("passfn.gohtml"))
 	//tpl = template.Must(template.ParseFiles("fns.gohtml"))
 
 }
