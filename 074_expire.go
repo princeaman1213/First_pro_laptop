@@ -5,6 +5,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"github.com/satori/go.uuid"
+	"time"
+	"fmt"
 )
 
 type user struct {
@@ -15,9 +17,18 @@ type user struct {
 	Role     string
 }
 
+type session struct {
+	UserName string
+	lastact time.Time
+}
+
 var tpl *template.Template
+
 var dbuser = map[string]user{}      // user ID, user
-var dbsession = map[string]string{} // session ID, user ID
+var dbsession = map[string]session{} // session ID, session
+
+var dbsessioncleaned time.Time      //takes the value of time at the start of the program
+const sessionlen int = 30
 
 func init() {
 	tpl = template.Must(template.ParseFiles("signupperm.gohtml","bar1.gohtml","bar2.gohtml","login.gohtml"))
@@ -33,16 +44,20 @@ func main() {
 	http.HandleFunc("/logout", logout)
 	http.Handle("/favicon.ico", http.NotFoundHandler())
 	http.ListenAndServe(":8080", nil)
+
+	//go cleansession()
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
 	u := getUser(w, r)
+	fmt.Println("fron index")
+	showsession() //for understanding
 	tpl.ExecuteTemplate(w, "bar1.gohtml", u)
 }
 
 func bar(w http.ResponseWriter, r *http.Request) {
 	u := getUser(w, r)
-	if !alreadyLoggedIn(r) {
+	if !alreadyLoggedIn(w,r) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -51,13 +66,13 @@ func bar(w http.ResponseWriter, r *http.Request) {
 		http.Error(w,"Entry not allowed , you are not BOND!!",http.StatusForbidden)
 		return
 	}
-
+//showsession() //for demo
 	tpl.ExecuteTemplate(w, "bar2.gohtml", u)
 
 }
 
 func signup(w http.ResponseWriter, r *http.Request) {
-	if alreadyLoggedIn(r) {
+	if alreadyLoggedIn(w,r) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)   //cant login the second time
 		return
 	}
@@ -86,7 +101,7 @@ func signup(w http.ResponseWriter, r *http.Request) {
 			Value: sID.String(),
 		}
 		http.SetCookie(w, c)
-		dbsession[c.Value] = un
+		dbsession[c.Value] = session{un ,time.Now()}
 
 		// store user in dbuser
 		bs,err:=bcrypt.GenerateFromPassword([]byte(p),bcrypt.MinCost)        //encrypt password
@@ -101,7 +116,8 @@ func signup(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-
+	fmt.Println("from sign up")
+     showsession() //demo
 	tpl.ExecuteTemplate(w, "signupperm.gohtml", u)
 }
 
@@ -116,28 +132,39 @@ func getUser(w http.ResponseWriter, r *http.Request) user {
 		}
 
 	}
+	c.MaxAge=sessionlen
 	http.SetCookie(w, c)
 
 	// if the user exists already, get user
 	var u user
 	if un, ok := dbsession[c.Value]; ok {
-		u = dbuser[un]
+		un.lastact=time.Now()
+		dbsession[c.Value]=un
+		u = dbuser[un.UserName]
 	}
 	return u
 }
 
-func alreadyLoggedIn(r *http.Request) bool {
+func alreadyLoggedIn(w http.ResponseWriter,r *http.Request) bool {
 	c, err := r.Cookie("session")
 	if err != nil {
 		return false
 	}
-	un := dbsession[c.Value]
-	_, ok := dbuser[un]
+
+	s,ok:=dbsession[c.Value]
+	if ok{
+		s.lastact=time.Now()
+		dbsession[c.Value]=s
+	}
+
+	_, ok = dbuser[s.UserName]
+	c.MaxAge=sessionlen
+	http.SetCookie(w,c)
 	return ok
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
-	if alreadyLoggedIn(r) {
+	if alreadyLoggedIn(w,r) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -164,17 +191,19 @@ func login(w http.ResponseWriter, r *http.Request) {
 			Name:  "session",
 			Value: sID.String(),
 		}
+		c.MaxAge=sessionlen
 		http.SetCookie(w, c)
-		dbsession[c.Value] = un
+		dbsession[c.Value] = session{un ,time.Now()}
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-
+	fmt.Println("from login")
+    showsession()
 	tpl.ExecuteTemplate(w, "login.gohtml", nil)
 }
 
 func logout(w http.ResponseWriter,r *http.Request){
-	if !alreadyLoggedIn(r) {
+	if !alreadyLoggedIn(w,r) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -185,7 +214,32 @@ func logout(w http.ResponseWriter,r *http.Request){
 	c.MaxAge = -1
 	http.SetCookie(w, c)
 
+	/*if time.Now().Sub(dbsessioncleaned) > (time.Second*30){ //if time now - time at start of prog is greater than 30 sec then clean session
+		go cleansession()
+	}*/
+
+
 	//io.WriteString(w,"You have been logged out !")
 	// why does the above line gives this error(http: multiple response.WriteHeader calls)
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
+}
+
+func cleansession(){
+	fmt.Println("before clean")
+    showsession()
+	for i,v:=range dbsession{
+		if time.Now().Sub(v.lastact)>(time.Second*30){
+			delete(dbsession,i)
+		}
+	}
+	dbsessioncleaned=time.Now()        //Why ??
+	fmt.Println("after clean")
+	showsession()
+}
+
+func showsession(){
+	for i,v:=range dbsession{
+		fmt.Println("\n",i,v.UserName)
+
+	}
 }
